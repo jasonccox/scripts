@@ -1,0 +1,39 @@
+#!/bin/bash
+
+OLD_EMAILS="space separated list of emails to be replaced"
+NAME="new author name for commits"
+NEW_EMAIL="new author email for commits"
+REPO_BASE="base URL for git clone, such as git@gitlab.com:jasonccox/"
+REPOS="space separated list of repos in which to make replacements"
+
+function replaceEmail {
+    export OLD_EMAIL="$1"
+    export CORRECT_NAME="$2"
+    export CORRECT_EMAIL="$3"
+
+    # The following comes from https://help.github.com/en/articles/changing-author-info
+
+    git filter-branch --env-filter '
+    if [ "$GIT_COMMITTER_EMAIL" = "$OLD_EMAIL" ]
+    then
+        export GIT_COMMITTER_NAME="$CORRECT_NAME"
+        export GIT_COMMITTER_EMAIL="$CORRECT_EMAIL"
+    fi
+    if [ "$GIT_AUTHOR_EMAIL" = "$OLD_EMAIL" ]
+    then
+        export GIT_AUTHOR_NAME="$CORRECT_NAME"
+        export GIT_AUTHOR_EMAIL="$CORRECT_EMAIL"
+    fi
+    ' --tag-name-filter cat -- --branches --tags
+}
+
+for repo in $REPOS; do
+    for email in $OLD_EMAILS; do
+        git clone --bare "$REPO_BASE$repo.git"
+        cd "$repo.git"
+        replaceEmail "$email" "$NAME" "$NEW_EMAIL"
+        git push --force --tags origin 'refs/heads/*'
+        cd ..
+        rm -rf "$repo.git"
+    done
+done
