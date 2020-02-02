@@ -11,15 +11,20 @@ if ! command -v wkhtmltopdf &> /dev/null; then
 fi
 
 if [ -z "$1" ]; then
-    echo USAGE: topdf INPUT_FILE
+    echo USAGE: topdf INPUT_FILE [pandoc options]
     exit 1
 fi
 
+# determine output filename from input file
 IN_FILE=$1
 FILENAME=$(basename -- "$IN_FILE")
 OUT_FILE="${FILENAME%.*}".pdf
 
+# use the rest of the arguments as extra options to pandoc
+shift
+EXTRA_OPTIONS="$@"
+
 echo Converting "$IN_FILE" to "$OUT_FILE"...
 
-pandoc -s --pdf-engine=wkhtmltopdf -V margin-left:1in -V margin-right:1in -V margin-top:1in -V margin-bottom:1in -o "$OUT_FILE" "$IN_FILE"
+pandoc -s --pdf-engine=wkhtmltopdf $CSS -V margin-left:1in -V margin-right:1in -V margin-top:1in -V margin-bottom:1in -o "$OUT_FILE" $EXTRA_OPTIONS "$IN_FILE"
 
