@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Clears all Nextcloud "conflicted copy" files within the working directory,
+# recursing through all sub-directories.
+
+find . -name *"(conflicted copy "* | while IFS= read -r line
+do
+    echo Removing "$line"
+    rm "$line"
+done
