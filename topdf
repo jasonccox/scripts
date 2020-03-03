@@ -26,5 +26,5 @@ EXTRA_OPTIONS="$@"
 
 echo Converting "$IN_FILE" to "$OUT_FILE"...
 
-pandoc -s --pdf-engine=wkhtmltopdf $CSS -V margin-left:1in -V margin-right:1in -V margin-top:1in -V margin-bottom:1in -o "$OUT_FILE" $EXTRA_OPTIONS "$IN_FILE"
+pandoc -s --pdf-engine=wkhtmltopdf $CSS -V margin-left:1in -V margin-right:1in -V margin-top:1in -V margin-bottom:1in -V papersize:letter -o "$OUT_FILE" $EXTRA_OPTIONS "$IN_FILE"
 
