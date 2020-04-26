@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+# vimify - Add the power of vim to any text entry by using vim instead!
+# Author: Jason Cox
+# Repo: https://github.com/jasonccox/scripts
+#
+# DESCRIPTION
+# vimify works by opening a temporary file in vim and copying the contents of
+# the file into the system clipboard when closed. If you bind vimify to a
+# keyboard shortcut, then you can just press the shortcut anywhere, write your
+# text in vim, and then paste it where you need it!
+#
+# REQUIREMENTS
+# vimify works on Linux and macOS with the following dependencies:
+# - gVim (Linux) or MacVim (macOS)
+# - xclip (Linux)
+#
+# INSTALLATION
+# 1. Download vimify
+#    (curl -O https://raw.githubusercontent.com/jasonccox/scripts/master/vimify)
+# 2. Make vimify executable
+#    (chmod a+x vimify)
+# 3. Create a global keyboard shortcut that launches vimify
+#
+# NOTES
+# All of the temporary files you write are stored in /tmp/vimify-USERNAME and
+# use a timestamp as the name. They will be deleted when the computer is
+# shutdown, but you can reference them in case you accidentally clear your
+# clipboard too soon.
+#
+# Any options passed to this script will be passed directly to vim. For example,
+# you could run "vimify +startinsert" to start vim in insert mode.
+#
+# CREDITS
+# vimify is inspired by cknadler's vim-anywhere and hrantzsch's vimclip.
+
+DIR="/tmp/vimify-$USER"
+
+# setup directory and file
+if [ ! -d "$DIR" ]; then
+    mkdir -p "$DIR"
+    chmod go-rwx "$DIR"
+fi
+
+file="$DIR/$(date "+%Y%M%d-%H%M%S")"
+
+# edit file in vim
+if command -v gvim &> /dev/null; then
+    gvim --nofork $@ "$file"
+elif command -v mvim &> /dev/null; then
+    mvim --nofork $@ "$file"
+fi
+
+# exit if the file wasn't written
+if [ ! -f "$file" ]; then
+    exit
+fi
+
+# make sure the file is only accessible by user
+chmod go-rwx "$file"
+
+# copy file contents to clipboard
+if command -v xclip &> /dev/null; then
+    xclip -selection clipboard < "$file"
+elif command -v pbcopy &> /dev/null; then
+    pbcopy < "$file"
+fi
