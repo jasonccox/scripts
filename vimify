@@ -13,6 +13,7 @@
 # REQUIREMENTS
 # vimify works on Linux and macOS with the following dependencies:
 # - gVim (Linux) or MacVim (macOS)
+#   (for macOS, mvim should be available at /usr/local/bin/mvim)
 # - xclip (Linux)
 #
 # INSTALLATION
@@ -47,8 +48,8 @@ file="$DIR/$(date "+%Y%M%d-%H%M%S")"
 # edit file in vim
 if command -v gvim &> /dev/null; then
     gvim --nofork $@ "$file"
-elif command -v mvim &> /dev/null; then
-    mvim --nofork $@ "$file"
+elif command -v /usr/local/bin/mvim &> /dev/null; then
+    /usr/local/bin/mvim --nofork $@ "$file"
 fi
 
 # exit if the file wasn't written
