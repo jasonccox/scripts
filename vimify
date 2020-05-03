@@ -47,9 +47,9 @@ file="$DIR/$(date "+%Y%M%d-%H%M%S")"
 
 # edit file in vim
 if command -v gvim &> /dev/null; then
-    gvim --nofork $@ "$file"
+    gvim --nofork "$@" "$file"
 elif command -v /usr/local/bin/mvim &> /dev/null; then
-    /usr/local/bin/mvim --nofork $@ "$file"
+    /usr/local/bin/mvim --nofork "$@" "$file"
 fi
 
 # exit if the file wasn't written
