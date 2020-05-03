@@ -32,6 +32,16 @@
 # Any options passed to this script will be passed directly to vim. For example,
 # you could run "vimify +startinsert" to start vim in insert mode.
 #
+# You may want to add the following to your gvimrc if you use vimify on macOS:
+#     if has("gui_macvim")
+#         " quit when all windows closed
+#         autocmd VimLeave * macaction terminate:
+#     endif
+# Otherwise, the script won't completely terminate until you manually quit
+# MacVim. This will close all MacVim windows, though, so you'll have to find
+# another solution if you use MacVim windows for normal editing as well. I just
+# use vim in the terminal for that, so this solution works for me.
+#
 # CREDITS
 # vimify is inspired by cknadler's vim-anywhere and hrantzsch's vimclip.
 
