@@ -1,0 +1,17 @@
+#!/bin/bash
+
+JOURNAL_DIR=~/journal
+
+# capture current date/time
+d="$(date)"
+
+# create directory JOURNAL_DIR/YEAR/MONTH if it doesn't already exist
+dir="$JOURNAL_DIR/$(date -d "$d" +%Y/%m)"
+mkdir -p $dir
+
+# create a new file with the date as the heading
+file="$dir/$(date -d "$d" +%Y%m%d-%H%M%S%z).md"
+echo "# $d" >> "$file"
+
+# edit the file
+vim "$file"
