@@ -3,7 +3,7 @@
 JOURNAL_DIR=~/journal
 
 # capture current date/time
-d="$(date)"
+d="$(date '+%c')"
 
 # create directory JOURNAL_DIR/YEAR/MONTH if it doesn't already exist
 dir="$JOURNAL_DIR/$(date -d "$d" +%Y/%m)"
