@@ -1,0 +1,73 @@
+#!/bin/sh
+#
+# tmux-reselect-layout - Rerun 'select-layout' in all of a tmux session's
+# windows. Useful for updating windows after changing the terminal size or when
+# starting a session with tmuxinator.
+
+usage() {
+    echo \
+'tmux-reselect-layout [-b|--bg] [-d|--delay <delay>] [-s|--session <session>]
+
+    -b|--bg                   Run in the background.
+
+    -d|--delay <delay>        Wait <delay> seconds before re-selecting the
+                              layouts. Defaults to 0.
+
+    -s|--session <session>    Re-select the layouts in the session with name/id
+                              <session>. Defaults to current session.'
+}
+
+reselect_layout() {
+    # Wait before starting. This is useful when running the script in a
+    # tmuxinator on_project_start hook to give the session/windows time to be
+    # created.
+    [ -n "$delay" ] && sleep "$delay"
+
+    # Save the initial window to return to it at the end.
+    initial_window=$(tmux list-windows -t "$session" -F '#{?window_active,#{window_id},}')
+
+    # Select the layout in each window.
+    for window in $(tmux list-windows -t "$session" -F '#{window_id}'); do
+
+        # Select the window so that it will have the current terminal size.
+        tmux select-window -t "$window"
+
+        # Re-apply the last preset layout.
+        tmux select-layout -t "$window"
+    done
+
+    # Return to the initial window.
+    tmux select-window -t "$initial_window"
+}
+
+# Parse command-line arguments.
+while [ -n "$1" ]; do
+    case "$1" in
+        -b|--bg )
+            bg=true
+            ;;
+        -d|--delay )
+            shift
+            delay="$1"
+            ;;
+        -s|--session )
+            shift
+            session="$1"
+            ;;
+        * )
+            usage
+            exit 1
+            ;;
+    esac
+
+    shift
+done
+
+# Use the current session as the default.
+[ -z "$session" ] && session="$(tmux display-message -p '#{session_id}')"
+
+if [ "$bg" = true ]; then
+    reselect_layout &
+else
+    reselect_layout
+fi
