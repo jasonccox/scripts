@@ -12,8 +12,7 @@
 #
 # REQUIREMENTS
 # vimify works on Linux and macOS with the following dependencies:
-# - gVim (Linux) or MacVim (macOS)
-#   (for macOS, mvim should be available at /usr/local/bin/mvim)
+# - alacritty
 # - xclip (Linux)
 #
 # INSTALLATION
@@ -32,16 +31,6 @@
 # Any options passed to this script will be passed directly to vim. For example,
 # you could run "vimify +startinsert" to start vim in insert mode.
 #
-# You may want to add the following to your gvimrc if you use vimify on macOS:
-#     if has("gui_macvim")
-#         " quit when all windows closed
-#         autocmd VimLeave * macaction terminate:
-#     endif
-# Otherwise, the script won't completely terminate until you manually quit
-# MacVim. This will close all MacVim windows, though, so you'll have to find
-# another solution if you use MacVim windows for normal editing as well. I just
-# use vim in the terminal for that, so this solution works for me.
-#
 # CREDITS
 # vimify is inspired by cknadler's vim-anywhere and hrantzsch's vimclip.
 
@@ -55,12 +44,17 @@ fi
 
 file="$DIR/$(date "+%Y%M%d-%H%M%S")"
 
-# edit file in vim
-if command -v gvim &> /dev/null; then
-    gvim --nofork "$@" "$file"
-elif command -v /usr/local/bin/mvim &> /dev/null; then
-    /usr/local/bin/mvim --nofork "$@" "$file"
+# determine how to launch alacritty based on OS
+alacritty_cmd=alacritty
+if [ "$(uname)" = Darwin ]; then
+    alacritty_cmd="open --new /Applications/Alacritty.app --wait-apps --args"
 fi
+
+# edit file in vim
+$alacritty_cmd \
+    --option window.startup_mode=Windowed \
+    --option window.title=vimify \
+    --command vim "$@" "$file"
 
 # exit if the file wasn't written
 if [ ! -f "$file" ]; then
