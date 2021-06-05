@@ -1,0 +1,10 @@
+#!/bin/bash
+
+LOG_FILE=~/mem.log
+
+timestamp=$(date +%s)
+free_out="$(free)"
+mem_used="$(echo "$free_out" | grep ^Mem: | awk '{print $3}')"
+swap_used="$(echo "$free_out" | grep ^Swap: | awk '{print $3}')"
+
+echo "$timestamp,$mem_used,$swap_used" >> "$LOG_FILE"

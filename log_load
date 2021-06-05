@@ -1,0 +1,8 @@
+#!/bin/bash
+
+LOG_FILE=~/load.log
+
+timestamp=$(date +%s)
+load=$(cat /proc/loadavg | awk '{print $1}')
+
+echo "$timestamp,$load" >> "$LOG_FILE"
